@@ -246,12 +246,6 @@ rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
-  --
-  -- [[ Custom start]] - custom plugins
-  'tpope/vim-fugitive',
-  'tpope/vim-rhubarb',
-  -- [[ Custom end ]]
-
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
 
@@ -592,6 +586,11 @@ require('lazy').setup({
           --  For example, in C this would take you to the header.
           map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
+          -- [[ Cutom start ]]
+          map('<leader>e', vim.diagnostic.open_float, '[E]rror popup')
+          map('K', vim.lsp.buf.hover, 'Hover Documentation')
+          -- [[ Custom end ]]
+
           -- Fuzzy find all the symbols in your current document.
           --  Symbols are things like variables, functions, types, etc.
           map('gO', require('telescope.builtin').lsp_document_symbols, 'Open Document Symbols')
@@ -677,6 +676,13 @@ require('lazy').setup({
           source = 'if_many',
           spacing = 2,
           format = function(diagnostic)
+            -- [[ Custom start]]
+            -- Check if the message is from LTeX and starts with "'Dummy..."
+            if diagnostic.source == 'LTeX' and diagnostic.message:match "^[ ']*Dummy%d+" then
+              return nil -- Don't show this message
+            end
+
+            -- [[ Custom end ]]
             local diagnostic_message = {
               [vim.diagnostic.severity.ERROR] = diagnostic.message,
               [vim.diagnostic.severity.WARN] = diagnostic.message,
@@ -731,6 +737,22 @@ require('lazy').setup({
             },
           },
         },
+
+        -- [[ Custom start ]]
+        ltex_ls = {
+          settings = {
+            ltex = {
+              -- Set your language, e.g., 'en-US', 'de-DE', 'fr', etc.
+              language = 'en-US',
+
+              -- This is the correct configuration based on the documentation
+              latex = {
+                commands = {},
+              },
+            },
+          },
+        },
+        -- [[ Custom end ]]
       }
 
       -- Ensure the servers and tools above are installed
@@ -746,10 +768,16 @@ require('lazy').setup({
       --
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
-      local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
-      })
+      -- local ensure_installed = vim.tbl_keys(servers or {})
+      -- vim.list_extend(ensure_installed, {
+      --   'stylua', -- Used to format Lua code
+      -- })
+      local ensure_installed = {
+        'lua_ls',
+        'stylua',
+        'texlab',
+        'ltex-ls',
+      }
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
@@ -952,6 +980,23 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
+      -- [[ Custom start ]]
+      local minicomment = require 'mini.comment'
+      minicomment.setup {
+        mappings = {
+          -- This sets <C-/> as the *only* line-commenting map
+          comment_line = '<C-_>',
+
+          -- This sets <C-/> as the *only* visual-commenting map
+          comment_visual = '<C-_>',
+
+          -- We keep these defaults
+          comment = 'gc',
+          textobject = 'gc',
+        },
+      }
+      -- [[ Custom end]]
+
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
@@ -1017,7 +1062,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
