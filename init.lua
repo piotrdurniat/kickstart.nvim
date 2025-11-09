@@ -678,7 +678,7 @@ require('lazy').setup({
           format = function(diagnostic)
             -- [[ Custom start]]
             -- Check if the message is from LTeX and starts with "'Dummy..."
-            if diagnostic.source == 'LTeX' and diagnostic.message:match "^[ ']*Dummy%d+" then
+            if diagnostic.source == 'LTeX' and diagnostic.message:match "^[ ']*Dumm[%d]*" then
               return nil -- Don't show this message
             end
 
