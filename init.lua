@@ -282,6 +282,18 @@ require('lazy').setup({
         changedelete = { text = '~' },
       },
     },
+
+    -- [[ Custom start ]]
+    -- ADD THIS FUNCTION TO FIX JUPYTEXT COMPATIBILITY
+    on_attach = function(bufnr)
+      if vim.api.nvim_buf_get_name(bufnr):match '%.ipynb$' then
+        -- Do not attach for .ipynb file, since these are converted
+        -- with jupytext.nvim
+        return false
+      end
+      return true
+    end,
+    -- [[ Custom end ]]
   },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
@@ -1024,7 +1036,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python', 'go', 'rust' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {

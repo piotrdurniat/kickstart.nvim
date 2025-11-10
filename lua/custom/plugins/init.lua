@@ -24,17 +24,4 @@ return {
       -- vim.g.vimtex_fold_enabled = 1
     end,
   },
-
-  {
-    'iamcco/markdown-preview.nvim',
-    -- This command builds the plugin's web app. It requires npm.
-    build = 'cd app && npm install',
-    -- This makes it load only when you open a markdown file
-    ft = { 'markdown' },
-    -- We can also add a nice keymap for it
-    config = function()
-      -- Set the keymap <leader>mp (space + m + p)
-      vim.keymap.set('n', '<leader>mp', '<cmd>MarkdownPreviewToggle<CR>', { desc = '[M]arkdown [P]review' })
-    end,
-  },
 }
