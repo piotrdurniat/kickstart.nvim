@@ -2,39 +2,100 @@ return {
   -- 1. THE ENGINE (molten-nvim)
   {
     'benlubas/molten-nvim',
-    -- This is the main plugin, so IT gets the filetype trigger
-    ft = { 'ipynb' },
-    -- It depends on jupytext (for file conversion) and image (for viewing)
-    dependencies = { 'goerz/jupytext.nvim', '3rd/image.nvim' },
-    config = function()
-      -- By the time this config runs, dependencies are loaded
-      require('molten').setup {
-        image_provider = require 'image',
-      }
-      -- Add keymaps
-      vim.keymap.set('n', '<leader>rr', '<cmd>MoltenRunCell<CR>', { desc = '[R]un Cell' })
-      vim.keymap.set('n', '<leader>ra', '<cmd>MoltenRunAll<CR>', { desc = '[R]un All' })
-      vim.keymap.set('v', '<leader>rr', '<cmd>MoltenRunVisual<CR>', { desc = '[R]un (Visual)' })
+    version = '^1.0.0', -- Pin version for stability
+    dependencies = { '3rd/image.nvim' },
+    build = ':UpdateRemotePlugins', -- CRITICAL from README: Molten is a remote plugin
+    init = function()
+      vim.g.molten_image_provider = 'image.nvim'
+      vim.g.molten_output_win_max_height = 20
+
+      -- 1. DISABLE POPUP
+      vim.g.molten_auto_open_output = false
+
+      -- This pushes text down to show output in the "ghost" space
+      vim.g.molten_output_virt_lines = true
+
+      -- 3. TEXT WRAPPING
+      vim.g.molten_wrap_output = true
+
+      -- Optional: Keep the side virtual text for short status messages
+      vim.g.molten_virt_text_output = true
+      vim.g.molten_virt_lines_off_by_1 = true
+
+      -- Makes <leader>os open the window AND jump into it in one go
+      vim.g.molten_enter_output_behavior = 'open_and_enter'
+
+      --- Automatic save/load
+      vim.api.nvim_create_autocmd('BufWinLeave', {
+        pattern = '*.ipynb',
+        callback = function()
+          -- Try to save. The pcall prevents errors if Molten isn't initialized
+          pcall(vim.cmd, 'MoltenSave')
+        end,
+      })
+
+      vim.api.nvim_create_autocmd('BufWinEnter', {
+        pattern = '*.ipynb',
+        callback = function()
+          -- Try to load data. If a save file exists, it loads it.
+          -- If not, it does nothing silently.
+          pcall(vim.cmd, 'MoltenLoad')
+        end,
+      })
     end,
+    keys = {
+      { '<leader>mi', '<cmd>MoltenInit<cr>', desc = '[M]olten [I]nit' },
+
+      -- CHANGED: Used the official command from README table
+      { '<leader>rr', '<cmd>MoltenReevaluateCell<cr>', desc = '[R]un Cell' },
+
+      -- CHANGED: Visual mode mapping as per README instructions (using :<C-u>...gv)
+      { '<leader>r', ':<C-u>MoltenEvaluateVisual<CR>gv', mode = 'v', desc = '[R]un Visual Selection' },
+
+      -- ADDED: Highly recommended by README
+      { '<leader>oe', '<cmd>MoltenEvaluateOperator<cr>', desc = '[O]perator [E]valuate (e.g. oeip)' },
+
+      { '<leader>rd', '<cmd>MoltenDelete<cr>', desc = '[R]un Delete Cell' },
+      { '<leader>rh', '<cmd>MoltenHideOutput<cr>', desc = '[R]un Hide Output' },
+      { '<leader>os', '<cmd>noautocmd MoltenEnterOutput<cr>', desc = '[O]pen [S]how Output' },
+    },
   },
 
   -- 2. THE CONVERTER (jupytext)
   {
     'goerz/jupytext.nvim',
-    -- This is now a dependency of molten, but we can still
-    -- define its own config here. lazy.nvim will merge them.
     version = '0.2.0',
-    opts = {}, -- This will just run require('jupytext').setup({})
+    opts = {},
   },
 
   -- 3. THE IMAGE VIEWER (for plots)
   {
     '3rd/image.nvim',
-    -- This is also a dependency of molten.
-    config = function()
-      require('image').setup {
-        backend = 'kitty',
-      }
-    end,
+    opts = {
+      backend = 'kitty',
+      max_width = 100,
+      max_height = 12,
+      max_height_window_percentage = math.huge,
+      max_width_window_percentage = math.huge,
+      window_overlap_clear_enabled = false,
+
+      -- ADD THIS SECTION TO FIX THE CRASH
+      integrations = {
+        markdown = {
+          enabled = false,
+          clear_in_insert_mode = false,
+          download_remote_images = true,
+          only_render_image_at_cursor = false,
+          filetypes = { 'markdown', 'vimwiki' },
+        },
+        neorg = {
+          enabled = true,
+          clear_in_insert_mode = false,
+          download_remote_images = true,
+          only_render_image_at_cursor = false,
+          filetypes = { 'norg' },
+        },
+      },
+    },
   },
 }

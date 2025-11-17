@@ -440,6 +440,7 @@ require('lazy').setup({
       local builtin = require 'telescope.builtin'
       -- [[ Custom start ]] - search Git files --
       vim.keymap.set('n', '<C-p>', require('telescope.builtin').git_files, { desc = 'Search Git Files' })
+      vim.keymap.set('n', '<leader>sb', builtin.git_branches, { desc = '[S]earch [B]ranches' })
       -- [[ Custom end ]]
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
@@ -693,8 +694,8 @@ require('lazy').setup({
             if diagnostic.source == 'LTeX' and diagnostic.message:match "^[ ']*Dumm[%d]*" then
               return nil -- Don't show this message
             end
-
             -- [[ Custom end ]]
+
             local diagnostic_message = {
               [vim.diagnostic.severity.ERROR] = diagnostic.message,
               [vim.diagnostic.severity.WARN] = diagnostic.message,
@@ -751,9 +752,13 @@ require('lazy').setup({
         },
 
         -- [[ Custom start ]]
+        -- FIX: Silence startup warnings
+        cmd = { 'sh', '-c', vim.fn.stdpath 'data' .. '/mason/bin/ltex-ls 2>/dev/null' },
+
         ltex_ls = {
           settings = {
             ltex = {
+
               -- Set your language, e.g., 'en-US', 'de-DE', 'fr', etc.
               language = 'en-US',
 
