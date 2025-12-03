@@ -281,19 +281,19 @@ require('lazy').setup({
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
       },
-    },
 
-    -- [[ Custom start ]]
-    -- ADD THIS FUNCTION TO FIX JUPYTEXT COMPATIBILITY
-    on_attach = function(bufnr)
-      if vim.api.nvim_buf_get_name(bufnr):match '%.ipynb$' then
-        -- Do not attach for .ipynb file, since these are converted
-        -- with jupytext.nvim
-        return false
-      end
-      return true
-    end,
-    -- [[ Custom end ]]
+      -- [[ Custom start ]]
+      -- ADD THIS FUNCTION TO FIX JUPYTEXT COMPATIBILITY
+      on_attach = function(bufnr)
+        if vim.api.nvim_buf_get_name(bufnr):match '%.ipynb$' then
+          -- Do not attach for .ipynb file, since these are converted
+          -- with jupytext.nvim
+          return false
+        end
+        return true
+      end,
+      -- [[ Custom end ]]
+    },
   },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
@@ -309,7 +309,6 @@ require('lazy').setup({
   --
   -- Then, because we use the `opts` key (recommended), the configuration runs
   -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
-
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
@@ -753,9 +752,10 @@ require('lazy').setup({
 
         -- [[ Custom start ]]
         -- FIX: Silence startup warnings
-        cmd = { 'sh', '-c', vim.fn.stdpath 'data' .. '/mason/bin/ltex-ls 2>/dev/null' },
+        -- cmd = { 'sh', '-c', vim.fn.stdpath 'data' .. '/mason/bin/ltex-ls 2>/dev/null' },
 
         ltex_ls = {
+          cmd = { 'ltex-silenced' },
           settings = {
             ltex = {
 
@@ -771,6 +771,23 @@ require('lazy').setup({
             },
           },
         },
+
+        pyright = {
+          settings = {
+            python = {
+              analysis = {
+                -- This is the critical setting for auto-imports
+                autoImportCompletions = true,
+                -- These ensure it finds libraries in your venv
+                autoSearchPaths = true,
+                useLibraryCodeForTypes = true,
+                -- Optional: Checking mode (off, basic, strict)
+                typeCheckingMode = 'basic',
+              },
+            },
+          },
+        },
+
         -- [[ Custom end ]]
       }
 
@@ -796,6 +813,7 @@ require('lazy').setup({
         'stylua',
         'texlab',
         'ltex-ls',
+        'pyright',
       }
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -841,7 +859,7 @@ require('lazy').setup({
           return nil
         else
           return {
-            timeout_ms = 500,
+            timeout_ms = 1500,
             lsp_format = 'fallback',
           }
         end
@@ -1108,6 +1126,10 @@ require('lazy').setup({
     },
   },
 })
+
+-- [[ Custom start ]]
+require 'custom.watch_file'
+-- [[ Custom end ]]
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

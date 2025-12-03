@@ -25,6 +25,7 @@ return {
       -- Makes <leader>os open the window AND jump into it in one go
       vim.g.molten_enter_output_behavior = 'open_and_enter'
 
+      vim.g.molten_open_cmd = '/home/piotr/.local/bin/molten-browser'
       --- Automatic save/load
       vim.api.nvim_create_autocmd('BufWinLeave', {
         pattern = '*.ipynb',
@@ -58,6 +59,8 @@ return {
       { '<leader>rd', '<cmd>MoltenDelete<cr>', desc = '[R]un Delete Cell' },
       { '<leader>rh', '<cmd>MoltenHideOutput<cr>', desc = '[R]un Hide Output' },
       { '<leader>os', '<cmd>noautocmd MoltenEnterOutput<cr>', desc = '[O]pen [S]how Output' },
+      { '<leader>ob', '<cmd>MoltenOpenInBrowser<cr>', desc = '[O]pen in [B]rowser' },
+      { '<leader>op', '<cmd>MoltenImagePopup<cr>', desc = '[O]pen [P]opup (Image)' },
     },
   },
 
