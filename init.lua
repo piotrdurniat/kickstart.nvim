@@ -760,7 +760,7 @@ require('lazy').setup({
             ltex = {
 
               -- Set your language, e.g., 'en-US', 'de-DE', 'fr', etc.
-              language = 'en-US',
+              language = 'pl-PL',
 
               dictionary = {},
 
@@ -773,6 +773,9 @@ require('lazy').setup({
         },
 
         pyright = {
+          -- [[ Custom Start ]]
+          filetypes = { 'python', 'markdown', 'jupyter', 'ipynb' },
+          -- [[ Custom End ]]
           settings = {
             python = {
               analysis = {
@@ -868,6 +871,9 @@ require('lazy').setup({
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
         python = { 'isort', 'black' },
+        -- [[ Custom Start: Jupytext/Molten Formatting ]]
+        ['python.jupytext'] = { 'isort', 'black' },
+        -- [[ Custom End ]]
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
@@ -1129,6 +1135,7 @@ require('lazy').setup({
 
 -- [[ Custom start ]]
 require 'custom.watch_file'
+require 'custom.ltex_toggle'
 -- [[ Custom end ]]
 
 -- The line beneath this is called `modeline`. See `:help modeline`

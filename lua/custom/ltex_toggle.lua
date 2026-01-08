@@ -1,0 +1,29 @@
+-- -- In ~/.config/nvim/lua/custom/lsp_utils.lua
+--
+-- function LtexToggle()
+--   -- Use the modern built-in API (replacing the deprecated 'require("lspconfig")' lookup)
+--   local attached_clients = vim.lsp.buf_get_clients { bufnr = 0 }
+--   local ltex_client = nil
+--
+--   -- 1. Search for the LTeX client
+--   for _, client in pairs(attached_clients) do
+--     if client.name == 'ltex_ls' then
+--       ltex_client = client
+--       break
+--     end
+--   end
+--
+--   if ltex_client then
+--     -- 2. Client is running, so detach (disable) it.
+--     vim.lsp.buf_detach_client(0, ltex_client.id)
+--     print 'LTeX checking disabled for current buffer.'
+--   else
+--     -- 3. Client is inactive, attempt to re-attach (enable) it.
+--     -- This relies on the global 'ltex_ls' config already being set up by lazy.nvim/mason.
+--     vim.lsp.start { name = 'ltex_ls', bufnr = 0 }
+--     print 'LTeX checking enabled.'
+--   end
+-- end
+--
+-- -- Your command registration remains the same:
+-- vim.api.nvim_create_user_command('LtexToggle', 'lua LtexToggle()', { nargs = 0, desc = 'Toggle LTeX grammar checking' })

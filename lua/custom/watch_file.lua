@@ -17,3 +17,11 @@ function watch_file(fname)
   )
 end
 vim.api.nvim_command "command! -nargs=1 Watch call luaeval('watch_file(_A)', expand('<args>'))"
+
+function unwatch_file()
+  -- This stops the single file watcher handle
+  w:stop()
+  print 'File watcher stopped.'
+end
+
+vim.api.nvim_command "command! Unwatch call luaeval('unwatch_file()')"
