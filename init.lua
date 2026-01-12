@@ -166,6 +166,13 @@ vim.o.scrolloff = 10
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
+-- [[ Custom start ]] --
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
+vim.opt.softtabstop = 4
+-- [[ Custom end ]] --
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -817,6 +824,7 @@ require('lazy').setup({
         'texlab',
         'ltex-ls',
         'pyright',
+        'shfmt',
       }
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -869,6 +877,12 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+
+        -- [[ Custom Start: Add Bash Formatting ]]
+        sh = { 'shfmt' },
+        bash = { 'shfmt' },
+        -- [[ Custom End ]]
+
         -- Conform can also run multiple formatters sequentially
         python = { 'isort', 'black' },
         -- [[ Custom Start: Jupytext/Molten Formatting ]]
@@ -1063,6 +1077,11 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
+    -- [[ Custom start ]]
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter-textobjects',
+    },
+    -- [[ Custom end ]]
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
       ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python', 'go', 'rust' },
@@ -1076,6 +1095,43 @@ require('lazy').setup({
         additional_vim_regex_highlighting = { 'ruby' },
       },
       indent = { enable = true, disable = { 'ruby' } },
+      -- [[ Custom Start: Text Objects Config ]]
+      textobjects = {
+        select = {
+          enable = true,
+          lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
+          keymaps = {
+            -- You can use the capture groups defined in textobjects.scm
+            ['af'] = '@function.outer', -- Select around a function
+            ['if'] = '@function.inner', -- Select inner part of a function
+            ['ac'] = '@class.outer', -- Select around a class
+            ['ic'] = '@class.inner', -- Select inner part of a class
+            ['aa'] = '@parameter.outer', -- Select around a parameter/argument
+            ['ia'] = '@parameter.inner', -- Select inner part of a parameter/argument
+          },
+        },
+        move = {
+          enable = true,
+          set_jumps = true, -- whether to set jumps in the jumplist
+          goto_next_start = {
+            [']f'] = '@function.outer',
+            [']c'] = '@class.outer',
+          },
+          goto_next_end = {
+            [']F'] = '@function.outer',
+            [']C'] = '@class.outer',
+          },
+          goto_previous_start = {
+            ['[f'] = '@function.outer',
+            ['[c'] = '@class.outer',
+          },
+          goto_previous_end = {
+            ['[F'] = '@function.outer',
+            ['[C'] = '@class.outer',
+          },
+        },
+      },
+      -- [[ Custom End ]]
     },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
