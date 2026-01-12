@@ -516,7 +516,7 @@ require('lazy').setup({
       local builtin = require 'telescope.builtin'
       -- [[ Custom start ]] - search Git files --
       vim.keymap.set('n', '<C-p>', require('telescope.builtin').git_files, { desc = 'Search Git Files' })
-      vim.keymap.set('n', '<leader>sb', builtin.git_branches, { desc = '[S]earch [B]ranches' })
+      vim.keymap.set('n', '<leader>sb', builtin.git_branches, { desc = '[S]earch Git [B]ranches' })
       -- [[ Custom end ]]
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
@@ -556,7 +556,19 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>pv', vim.cmd.Ex, { desc = '[P]roject [V]iew (Netrw)' })
 
       -- git (fugitive) remaps --
-      vim.keymap.set('n', '<leader>gs', vim.cmd.Git, { desc = '[G]it [S]tatus' })
+      vim.keymap.set('n', '<leader>gs', vim.cmd.Git, { desc = '[g]it [s]tatus' })
+
+      -- git branches: select to checkout, <c-t> to create new, <c-d> to delete
+      vim.keymap.set('n', '<leader>gb', builtin.git_branches, { desc = '[g]it [b]ranches' })
+
+      -- git commits: view project history, <cr> to checkout a commit
+      vim.keymap.set('n', '<leader>gc', builtin.git_commits, { desc = '[g]it [c]ommits' })
+
+      -- git buffer commits: view history only for the current file
+      vim.keymap.set('n', '<leader>gC', builtin.git_bcommits, { desc = '[g]it [C]ommits (buffer)' })
+
+      -- git stash: view and apply stashes
+      vim.keymap.set('n', '<leader>gS', builtin.git_stash, { desc = '[g]it [S]tash' })
 
       -- Remap Alt-j and Alt-k to move lines down and up
       vim.keymap.set('v', '<M-j>', ":m '>+1<CR>gv=gv")
