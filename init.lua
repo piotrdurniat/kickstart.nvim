@@ -167,10 +167,14 @@ vim.o.scrolloff = 10
 vim.o.confirm = true
 
 -- [[ Custom start ]] --
+vim.opt.colorcolumn = '90'
+
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.opt.softtabstop = 4
+-- nvim-ufo setup:
+vim.o.fillchars = 'eob: ,fold: ,foldopen:,foldsep: ,foldinner: ,foldclose:'
 -- [[ Custom end ]] --
 
 -- [[ Basic Keymaps ]]
