@@ -880,6 +880,16 @@ require('lazy').setup({
           },
         },
 
+        texlab = {
+          settings = {
+            texlab = {
+              build = {
+                args = { '-pdf', '-interaction=nonstopmode', '-synctex=1', '-shell-escape', '%f' },
+              },
+            },
+          },
+        },
+
         -- [[ Custom end ]]
       }
 

@@ -11,7 +11,15 @@ return {
       vim.g.vimtex_view_method = 'zathura'
 
       -- This is the default compiler, but it's good to be explicit
-      vim.g.vimtex_compiler_method = 'latexmk'
+      vim.g.vimtex_compiler_latexmk = {
+        options = {
+          '-shell-escape',
+          '-verbose',
+          '-file-line-error',
+          '-synctex=1',
+          '-interaction=nonstopmode',
+        },
+      }
 
       -- Optional: Enable folding
       -- vim.g.vimtex_fold_enabled = 1
