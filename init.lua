@@ -832,6 +832,10 @@ vim.keymap.set('n', '<leader>sn', function()
 
         ltex_ls = {
           cmd = { 'ltex-silenced' },
+          -- Restrict LTeX to text-like buffers. Without this, `vim.lsp.enable`
+          -- treats a nil `filetypes` as "attach everywhere", so LTeX grammar
+          -- warnings also appear on netrw and other non-text buffers.
+          filetypes = { 'bib', 'gitcommit', 'markdown', 'org', 'plaintex', 'rst', 'rnoweb', 'tex', 'pandoc', 'quarto', 'rmd', 'context', 'html', 'xhtml', 'mail', 'text' },
           settings = {
             ltex = {
 
