@@ -226,7 +226,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function()
-    vim.hl.on_yank()
+    vim.highlight.on_yank()
   end,
 })
 
@@ -1168,8 +1168,15 @@ require('lazy').setup({
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
-    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Custom start ]]
+    -- main = 'nvim-treesitter.configs', -- Sets main module to use for opts
+    config = function(_, opts)
+      local ok, ts = pcall(require, 'nvim-treesitter.configs')
+      if not ok then
+        return -- Cicho ignoruj brak pliku, zeby edytor mogl wystartowac
+      end
+      ts.setup(opts)
+    end,
     dependencies = {
       'nvim-treesitter/nvim-treesitter-textobjects',
     },
