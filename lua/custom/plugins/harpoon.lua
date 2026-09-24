@@ -1,47 +1,37 @@
 return {
-  'theprimeagen/harpoon',
-  dependencies = {
-    'nvim-lua/plenary.nvim',
+  {
+    'ThePrimeagen/harpoon',
+    branch = 'harpoon2',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    config = function()
+      local harpoon = require 'harpoon'
+      harpoon:setup()
+
+      vim.keymap.set('n', '<leader>ha', function() harpoon:list():add() end, { desc = '[H]arpoon [A]dd' })
+
+      vim.keymap.set('n', '<leader>hv', function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, { desc = '[H]arpoon [V]iew' })
+
+      for i = 1, 7 do
+        vim.keymap.set('n', '<leader>' .. i, function() harpoon:list():select(i) end, { desc = 'Harpoon file ' .. i })
+      end
+
+      -- Harpoon2 dropped the built-in `harpoon.term` module, so these are
+      -- standalone numbered terminals (create-on-first-use, reused after).
+      -- They take over the current window rather than opening a split.
+      local terms = {}
+      local function goto_term(index)
+        local bufnr = terms[index]
+        if bufnr and vim.api.nvim_buf_is_valid(bufnr) then
+          vim.api.nvim_win_set_buf(0, bufnr)
+        else
+          vim.cmd 'terminal'
+          terms[index] = vim.api.nvim_get_current_buf()
+        end
+        vim.cmd 'startinsert'
+      end
+
+      vim.keymap.set('n', '<leader>t1', function() goto_term(1) end, { desc = '[T]erminal 1' })
+      vim.keymap.set('n', '<leader>t2', function() goto_term(2) end, { desc = '[T]erminal 2' })
+    end,
   },
-  config = function()
-    local mark = require 'harpoon.mark'
-    local ui = require 'harpoon.ui'
-    local term = require 'harpoon.term'
-    local cmd_ui = require 'harpoon.cmd-ui'
-
-    vim.keymap.set('n', '<leader>ha', mark.add_file, { desc = '[H]arpoon [A]dd' })
-    vim.keymap.set('n', '<leader>hv', ui.toggle_quick_menu, { desc = '[H]arpoon [V]iew' })
-
-    vim.keymap.set('n', '<leader>1', function()
-      ui.nav_file(1)
-    end)
-    vim.keymap.set('n', '<leader>2', function()
-      ui.nav_file(2)
-    end)
-    vim.keymap.set('n', '<leader>3', function()
-      ui.nav_file(3)
-    end)
-    vim.keymap.set('n', '<leader>4', function()
-      ui.nav_file(4)
-    end)
-    vim.keymap.set('n', '<leader>5', function()
-      ui.nav_file(5)
-    end)
-    vim.keymap.set('n', '<leader>6', function()
-      ui.nav_file(6)
-    end)
-    vim.keymap.set('n', '<leader>7', function()
-      ui.nav_file(7)
-    end)
-
-    vim.keymap.set('n', '<leader>t1', function()
-      term.gotoTerminal(1)
-    end, { desc = '[H]arpoon [T]erminal' })
-    vim.keymap.set('n', '<leader>t2', function()
-      term.gotoTerminal(2)
-    end, { desc = '[H]arpoon [T]erminal 2' })
-    vim.keymap.set('n', '<leader>hc', function()
-      cmd_ui.toggle_quick_menu()
-    end, { desc = '[H]arpoon [C]ommands' })
-  end,
 }

@@ -58,10 +58,12 @@ built-in `vim.pack` plugin manager, while this fork stays on `lazy.nvim`.
   nerd-font sign glyphs, and a `virtual_text` filter that hides LTeX `'Dummy...'` messages.
 - Additional servers in `servers`:
   - `ltex_ls` — `cmd = 'ltex-silenced'`, language `pl-PL`, LaTeX `commands = {}`.
-  - `pyright` — filetypes `{ 'python', 'markdown', 'jupyter', 'ipynb' }`, auto-import/type-check settings.
+  - `pyright` — filetypes `{ 'python' }` (markdown/jupyter/ipynb were removed so pyright
+    stops parsing prose as Python; embedded Python is handled by otter.nvim), auto-import/type-check settings.
   - `texlab` — build args `-pdf -interaction=nonstopmode -synctex=1 -shell-escape %f`.
 - `mason-tool-installer` `ensure_installed` is an explicit list (upstream derives it from
-  `servers`): `lua_ls`, `stylua`, `texlab`, `ltex-ls`, `pyright`, `shfmt`.
+  `servers`): `lua_ls`, `stylua`, `texlab`, `ltex-ls`, `pyright`, `shfmt`, `markdownlint`.
+- Diagnostic `jump` uses `on_jump` (the deprecated `jump.float` was removed in favor of it).
 
 ### conform.nvim
 - `format_on_save` always formats: falls back to
@@ -78,8 +80,14 @@ built-in `vim.pack` plugin manager, while this fork stays on `lazy.nvim`.
 - Extra `mini.comment` setup remapping `<C-_>` as the line/visual comment key while
   keeping `gc` textobject/comment.
 
+### blink.cmp
+- `fuzzy.implementation = 'prefer_rust_with_warning'` (upstream defaults to the Lua
+  implementation). Downloads a prebuilt `blink_cmp_fuzzy` binary on supported systems and
+  falls back to Lua with a warning otherwise.
+
 ### nvim-treesitter (new rewrite, `branch = 'main'`)
-- Extra parsers: `python`, `go`, `rust` added to the install list.
+- Extra parsers: `python`, `go`, `rust`, `latex` added to the install list
+  (`latex` is needed by `render-markdown.nvim` for math).
 - Added dependency `nvim-treesitter/nvim-treesitter-textobjects` with:
   - select textobjects `af`/`if` (function), `ac`/`ic` (class), `aa`/`ia` (parameter)
   - move keymaps `]f`/`]F`/`[f`/`[F` (function), `]c`/`]C`/`[c`/`[C` (class)
@@ -87,9 +95,14 @@ built-in `vim.pack` plugin manager, while this fork stays on `lazy.nvim`.
   - Note: keymaps are registered manually because the new textobjects release no longer
     auto-maps from config.
 
+### nvim-lint / markdownlint
+- `require 'kickstart.plugins.lint'` enabled (was commented out) to lint markdown with
+  `markdownlint` (installed via Mason, added to `ensure_installed`).
+
 ### Bottom of file
 - `{ import = 'custom.plugins' }` enabled (loads everything under `lua/custom/plugins/`).
-- `require 'custom.watch_file'` and `require 'custom.ltex_toggle'` loaded at startup.
+- `require 'custom.watch_file'` loaded at startup (the no-op `require 'custom.ltex_toggle'`
+  was removed; `lua/custom/ltex_toggle.lua` is entirely commented out).
 
 ---
 
@@ -102,14 +115,21 @@ built-in `vim.pack` plugin manager, while this fork stays on `lazy.nvim`.
   `CopilotC-Nvim/CopilotChat.nvim` with floating window; keymaps `<leader>cc` toggle,
   `<leader>ce` explain, `<leader>cf` fix, `<leader>co` optimize, `<leader>cq` quick-ask.
 - `git.lua` — `tpope/vim-fugitive` and `tpope/vim-rhubarb`.
-- `harpoon.lua` — `theprimeagen/harpoon`: `<leader>ha` add, `<leader>hv` menu,
-  `<leader>1..7` nav, `<leader>t1/t2` terminals, `<leader>hc` command menu.
+- `harpoon.lua` — `ThePrimeagen/harpoon` on `branch = 'harpoon2'`: `<leader>ha` add,
+  `<leader>hv` menu, `<leader>1..7` select. Harpoon2 dropped the built-in `term`/`cmd-ui`
+  modules, so `<leader>t1/t2` are standalone numbered terminals (create-on-first-use,
+  replacing the current window instead of opening a split) and the old `<leader>hc`
+  command menu is gone.
 - `jupyter.lua` — `goerz/jupytext.nvim`, `benlubas/molten-nvim` (+ `3rd/image.nvim`
   with kitty backend), full molten keymap set (`<leader>ji/je/jr/jd/jh/js/jp/jb/jo`),
   auto `MoltenSave`/`MoltenLoad` on `*.ipynb`.
 - `markdown-preview.lua` — `iamcco/markdown-preview.nvim`, `<leader>mp` toggle.
 - `opencode.lua` — `sudo-tee/opencode.nvim` + `render-markdown.nvim` (with
-  `opencode_output` filetype), `blink.cmp` and `snacks.nvim` as providers.
+  `opencode_output` filetype) and `blink.cmp`. Telescope is used as the picker provider
+  (`snacks.nvim` was removed to avoid an unconfigured dependency).
+  `render-markdown.nvim` has LaTeX rendering enabled (`latex2text` converter, inline +
+  block math, `RenderMarkdownMath` highlight), toggleable via the local `enable_latex`
+  flag at the top of the file.
 - `otter.lua` — `jmbuhr/otter.nvim` activated on `markdown`/`quarto` with
   `{ 'python', 'lua' }`; wrapped in `pcall` to suppress buffer-name conflicts.
 - `treesitter-context.lua` — `nvim-treesitter/nvim-treesitter-context`,

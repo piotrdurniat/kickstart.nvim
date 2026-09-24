@@ -195,7 +195,11 @@ vim.diagnostic.config {
   virtual_lines = false, -- Text shows up underneath the line, with virtual lines
 
   -- Auto open the float, so you can easily read the errors when jumping with `[d` and `]d`
-  jump = { float = true },
+  jump = {
+    on_jump = function(_, bufnr)
+      vim.diagnostic.open_float { bufnr = bufnr, scope = 'cursor', focus = false }
+    end,
+  },
 }
 
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
@@ -854,7 +858,10 @@ vim.keymap.set('n', '<leader>sn', function()
 
         pyright = {
           -- [[ Custom Start ]]
-          filetypes = { 'python', 'markdown', 'jupyter', 'ipynb' },
+          -- Only attach to real Python buffers. `markdown`/`jupyter`/`ipynb` here
+          -- made pyright parse entire markdown documents as Python (garbage errors
+          -- on prose). Python embedded in markdown is handled by otter.nvim.
+          filetypes = { 'python' },
           -- [[ Custom End ]]
           settings = {
             python = {
@@ -907,6 +914,7 @@ vim.keymap.set('n', '<leader>sn', function()
         'ltex-ls',
         'pyright',
         'shfmt',
+        'markdownlint',
       }
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -958,6 +966,12 @@ vim.keymap.set('n', '<leader>sn', function()
         -- [[ Custom Start: Add Bash Formatting ]]
         sh = { 'shfmt' },
         bash = { 'shfmt' },
+        -- [[ Custom End ]]
+
+        -- [[ Custom Start: Add C/C++/Arduino Formatting ]]
+        arduino = { 'clang_format' },
+        c = { 'clang_format' },
+        cpp = { 'clang_format' },
         -- [[ Custom End ]]
 
         -- Conform can also run multiple formatters sequentially
@@ -1051,14 +1065,13 @@ vim.keymap.set('n', '<leader>sn', function()
 
       snippets = { preset = 'luasnip' },
 
-      -- Blink.cmp includes an optional, recommended rust fuzzy matcher,
-      -- which automatically downloads a prebuilt binary when enabled.
-      --
-      -- By default, we use the Lua implementation instead, but you may enable
-      -- the rust implementation via `'prefer_rust_with_warning'`
+      -- Blink.cmp includes an optional, recommended rust fuzzy matcher which
+      -- automatically downloads a prebuilt binary on supported systems
+      -- (this one is x86_64-linux). Falls back to the Lua implementation and
+      -- warns if the prebuilt binary is unavailable.
       --
       -- See :h blink-cmp-config-fuzzy for more information
-      fuzzy = { implementation = 'lua' },
+      fuzzy = { implementation = 'prefer_rust_with_warning' },
 
       -- Shows a signature help window while you type arguments for a function
       signature = { enabled = true },
@@ -1229,7 +1242,7 @@ vim.keymap.set('n', '<leader>sn', function()
       end)
 
       -- ensure basic parser are installed
-      local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python', 'go', 'rust' }
+      local parsers = { 'bash', 'c', 'diff', 'html', 'latex', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python', 'go', 'rust' }
       require('nvim-treesitter').install(parsers)
 
       ---@param buf integer
@@ -1289,7 +1302,7 @@ vim.keymap.set('n', '<leader>sn', function()
   --
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
-  -- require 'kickstart.plugins.lint',
+  require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommended keymaps
@@ -1328,7 +1341,6 @@ vim.keymap.set('n', '<leader>sn', function()
 
 -- [[ Custom start ]]
 require 'custom.watch_file'
-require 'custom.ltex_toggle'
 -- [[ Custom end ]]
 
 -- The line beneath this is called `modeline`. See `:help modeline`
